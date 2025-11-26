@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hola</title>
+
+</head>
+<body>
+ <h1>welcome</h1>
+ <div id="scrapper-status" style="margin-top:20px; font-size:1.2em;"></div>
+ <button onclick="consultarEstadoScrapper()">Consultar estado del scrapper</button>
+
+ <!-- Modal -->
+ <div id="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5);">
+   <div style="background:#fff; padding:30px 20px; border-radius:8px; max-width:350px; margin:120px auto; box-shadow:0 2px 10px #0003; text-align:center; position:relative;">
+     <span id="modal-close" style="position:absolute; right:10px; top:10px; cursor:pointer; font-size:1.5em;">&times;</span>
+     <div id="modal-content"></div>
+   </div>
+ </div>
+
+ <script>
+function showModal(message, color) {
+    document.getElementById('modal-content').innerHTML = message;
+    document.getElementById('modal-content').style.color = color;
+    document.getElementById('modal').style.display = 'block';
+}
+document.getElementById('modal-close').onclick = function() {
+    document.getElementById('modal').style.display = 'none';
+}
+
+function consultarEstadoScrapper() {
+    fetch('http://localhost:8080/webhook/scrapper_status')
+        .then(response => response.json())
+        .then(data => {
+            let div = document.getElementById('scrapper-status');
+            let color = 'orange';
+            let icon = '⚠️';
+            if (data.status === 'success') {
+                div.innerHTML = '✅ ' + data.message;
+                color = 'green';
+                icon = '✅';
+            } else if (data.status === 'error') {
+                div.innerHTML = '❌ ' + data.message;
+                color = 'red';
+                icon = '❌';
+            } else {
+                div.innerHTML = icon + ' ' + data.message;
+            }
+            showModal(icon + ' Status: <b>' + data.status + '</b><br>' + data.message, color);
+        })
+        .catch(err => {
+            let div = document.getElementById('scrapper-status');
+            div.innerHTML = 'Error al consultar el estado.';
+            div.style.color = 'gray';
+            showModal('Error al consultar el estado.', 'gray');
+        });
+}
+// Consultar automáticamente al cargar la página
+// window.onload = consultarEstadoScrapper;
+</script>
+</body>
+</html>
