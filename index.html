@@ -31,8 +31,7 @@ document.getElementById('modal-close').onclick = function() {
 }
 
 function consultarEstadoScrapper() {
-    fetch('http://0.0.0.0:8080/webhook/scrapper_status')
-    
+    fetch('/webhook/scrapper_status')
         .then(response => response.json())
         .then(data => {
             let div = document.getElementById('scrapper-status');
