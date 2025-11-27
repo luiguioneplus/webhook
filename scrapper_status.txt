@@ -1,1 +1,1 @@
-success
+{"status": "success", "mensaje": "hola"}

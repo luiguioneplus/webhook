@@ -11,6 +11,7 @@
  <div id="scrapper-status" style="margin-top:20px; font-size:1.2em;"></div>
  <button onclick="consultarEstadoScrapper()">Consultar estado del scrapper</button>
 
+
  <!-- Modal -->
  <div id="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5);">
    <div style="background:#fff; padding:30px 20px; border-radius:8px; max-width:350px; margin:120px auto; box-shadow:0 2px 10px #0003; text-align:center; position:relative;">
@@ -30,30 +31,39 @@ document.getElementById('modal-close').onclick = function() {
 }
 
 function consultarEstadoScrapper() {
-    fetch('http://localhost:8080/webhook/scrapper_status')
+    fetch('http://0.0.0.0:8080/webhook/scrapper_status')
+    
         .then(response => response.json())
         .then(data => {
             let div = document.getElementById('scrapper-status');
+            // 💡 Unificamos la obtención del mensaje: usa 'mensaje' si existe, si no usa 'message'
+            let statusMessage = data.mensaje || data.message || 'No hay mensaje de estado disponible.'; 
+            
             let color = 'orange';
             let icon = '⚠️';
+            
             if (data.status === 'success') {
-                div.innerHTML = '✅ ' + data.message;
+                div.innerHTML = '✅ ' + statusMessage;
                 color = 'green';
                 icon = '✅';
             } else if (data.status === 'error') {
-                div.innerHTML = '❌ ' + data.message;
+                // ✅ Corregido para usar la variable statusMessage
+                div.innerHTML = '❌ ' ; 
                 color = 'red';
                 icon = '❌';
             } else {
-                div.innerHTML = icon + ' ' + data.message;
+                // ✅ Usa la variable statusMessage
+                div.innerHTML = icon + ' ' + statusMessage;
             }
-            showModal(icon + ' Status: <b>' + data.status + '</b><br>' + data.message, color);
+            
+            // ✅ Usa statusMessage para el modal también
+            showModal(icon + ' Status: <b>' + data.status + '</b><br>' + statusMessage, color);
         })
         .catch(err => {
             let div = document.getElementById('scrapper-status');
             div.innerHTML = 'Error al consultar el estado.';
             div.style.color = 'gray';
-            showModal('Error al consultar el estado.', 'gray');
+            showModal('Error al consultar el estado. Inténtelo de nuevo.', 'gray');
         });
 }
 // Consultar automáticamente al cargar la página
