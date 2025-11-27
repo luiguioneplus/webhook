@@ -1,3 +1,4 @@
+from asyncio.windows_events import INFINITE
 from flask import Flask, jsonify, request
 import os
 from datetime import datetime
@@ -81,11 +82,13 @@ def webhook_scrapper_status_get():
         # Obtener status y mensaje del JSON
         status = data.get("status", "unknown").lower()
         mensaje = data.get("mensaje", "Sin mensaje")
+        infinite= data.get("infinite", "Sin infinite")
         
         if status == "success":
             return jsonify({
                 "status": "success",
                 "message": mensaje,
+                "infinite":infinite,
                 "data": data
             })
         elif status == "error":
@@ -181,7 +184,7 @@ if __name__ == "__main__":
 ║   🚀 API Webhook Flask corriendo              ║
 ╚════════════════════════════════════════════════╝
 
-📍 URL: https://0.0.0.0:{port}
+📍 URL: http://0.0.0.0:{port}
 
 📋 Endpoints disponibles:
    GET  /                           - Estado del API

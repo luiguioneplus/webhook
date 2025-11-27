@@ -31,38 +31,44 @@ document.getElementById('modal-close').onclick = function() {
 }
 
 function consultarEstadoScrapper() {
-    fetch('https://0.0.0.0:8080/webhook/scrapper_status')
+    fetch('http://localhost:8080/webhook/scrapper_status') 
+        // Ya no es necesario llamar a .json() si se usa 'no-cors'
+        // pero la respuesta de 'no-cors' será opaca, lo que hace difícil 
+        // procesar los datos de 'status' y 'mensaje' como se hace a continuación.
+        // Si el objetivo es solo verificar que el endpoint está vivo, funciona.
+        // Si quieres el cuerpo JSON, DEBES configurar CORS en el servidor.
+        
+        // Mantengo el .then(response => response.json()) para mantener la lógica de procesamiento de datos
+        // asumiendo que el *objetivo final* es que el servidor soporte CORS.
         .then(response => response.json())
         .then(data => {
             let div = document.getElementById('scrapper-status');
-            // 💡 Unificamos la obtención del mensaje: usa 'mensaje' si existe, si no usa 'message'
+            // 💡 Unificamos la obtención del mensaje
             let statusMessage = data.mensaje || data.message || 'No hay mensaje de estado disponible.'; 
             
             let color = 'orange';
             let icon = '⚠️';
             
-            if (data.status === 'success') {
-                div.innerHTML = '✅ ' + statusMessage;
+            if (data.status === 'success') {   
+                div.innerHTML = '✅ ' + statusMessage + ' ' + (data.infinite || data.data?.infinite || '');
                 color = 'green';
                 icon = '✅';
             } else if (data.status === 'error') {
-                // ✅ Corregido para usar la variable statusMessage
-                div.innerHTML = '❌ ' ; 
+                // Se agrega statusMessage que faltaba en tu código de ejemplo
+                div.innerHTML = '❌ ' + statusMessage; 
                 color = 'red';
                 icon = '❌';
             } else {
-                // ✅ Usa la variable statusMessage
                 div.innerHTML = icon + ' ' + statusMessage;
             }
             
-            // ✅ Usa statusMessage para el modal también
             showModal(icon + ' Status: <b>' + data.status + '</b><br>' + statusMessage, color);
         })
         .catch(err => {
             let div = document.getElementById('scrapper-status');
-            div.innerHTML = 'Error al consultar el estado.';
+            div.innerHTML = 'Error al consultar el estado. (Puede ser CORS o Servidor apagado)';
             div.style.color = 'gray';
-            showModal('Error al consultar el estado. Inténtelo de nuevo.', 'gray');
+            showModal('Error al consultar el estado. (Revisa consola y servidor)', 'gray');
         });
 }
 // Consultar automáticamente al cargar la página
