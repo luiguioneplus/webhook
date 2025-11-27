@@ -181,7 +181,7 @@ if __name__ == "__main__":
 ║   🚀 API Webhook Flask corriendo              ║
 ╚════════════════════════════════════════════════╝
 
-📍 URL: http://0.0.0.0:{port}
+📍 URL: https://0.0.0.0:{port}
 
 📋 Endpoints disponibles:
    GET  /                           - Estado del API
